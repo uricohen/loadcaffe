@@ -1,4 +1,5 @@
 local ffi = require 'ffi'
+local paths = require 'paths'
 local C = loadcaffe.C
 
 
@@ -14,8 +15,10 @@ loadcaffe.load = function(prototxt_name, binary_name, backend)
   -- transforms caffe prototxt to torch lua file model description and 
   -- writes to a script file
   local lua_name = prototxt_name..'.lua'
-  C.convertProtoToLua(handle, lua_name, backend)
-
+  if not paths.filep(lua_name) then
+    C.convertProtoToLua(handle, lua_name, backend)
+  end
+  
   -- executes the script, defining global 'model' module list
   local model = dofile(lua_name)
 
